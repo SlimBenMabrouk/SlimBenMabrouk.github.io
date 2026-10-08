@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Slim Ben Mabrouk — Cybersecurity</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22><rect width=%2216%22 height=%2216%22 fill=%22%230A0D0B%22/><text x=%222%22 y=%2212%22 font-size=%2210%22 fill=%22%233ECF7A%22 font-family=%22monospace%22>&gt;_</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0D0B; --panel:#10140F; --border:#1E2A1F; --border-soft:#172018;
+    --text:#D7E4D5; --muted:#7C8C7A; --dim:#4D5B4B;
+    --green:#3ECF7A; --amber:#E8A33D; --red:#E35D5D;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:inherit; margin:0; padding:0;}
+  html{scroll-padding-top:64px; scroll-behavior:smooth;}
+  html,body{height:100%;}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:'Inter',sans-serif; font-size:15px; line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  :root:not([data-theme="light"]){ color-scheme: dark; }
+  @media (prefers-color-scheme: light){
+    :root:not([data-theme="dark"]){
+      --bg:#0A0D0B; --panel:#10140F; --text:#D7E4D5; /* stays dark: terminal theme is intentional, not system-driven */
+    }
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  a{color:var(--green); text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  a:focus-visible, button:focus-visible{outline:2px solid var(--green); outline-offset:2px;}
+
+  .wrap{max-width:780px; margin:0 auto; padding:0 24px;}
+
+  /* Nav */
+  header{
+    position:sticky; top:0; z-index:20; background:rgba(10,13,11,.92); backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--border-soft); padding-top:env(safe-area-inset-top,0px);
+  }
+  nav.wrap{display:flex; align-items:center; justify-content:space-between; height:56px; gap:12px;}
+  .brand{font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--text); white-space:nowrap;}
+  .brand .prompt{color:var(--green);}
+  .navlinks{display:flex; gap:18px; font-family:'JetBrains Mono',monospace; font-size:13px;}
+  .navlinks a{color:var(--muted);}
+  .navlinks a:hover{color:var(--green); text-decoration:none;}
+  .menu-btn{display:none; background:none; border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; padding:6px 10px; border-radius:2px;}
+  @media (max-width:640px){
+    .navlinks{position:absolute; top:56px; left:0; right:0; background:var(--panel); border-bottom:1px solid var(--border-soft); flex-direction:column; padding:12px 24px; gap:10px; display:none;}
+    .navlinks.open{display:flex;}
+    .menu-btn{display:block;}
+  }
+
+  /* Hero */
+  .hero{padding:72px 0 56px;}
+  .termline{font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--muted); margin-bottom:6px;}
+  .termline .prompt{color:var(--green);}
+  .cursor{display:inline-block; width:8px; height:16px; background:var(--green); vertical-align:middle; margin-left:3px; animation:blink 1s steps(1) infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  .hero h1{font-family:'JetBrains Mono',monospace; font-size:clamp(28px,5vw,42px); font-weight:700; margin:14px 0 6px; letter-spacing:-0.01em;}
+  .hero .role{color:var(--green); font-family:'JetBrains Mono',monospace; font-size:16px; margin-bottom:18px;}
+  .hero p{max-width:60ch; color:var(--text);}
+  .hero-actions{display:flex; gap:12px; margin-top:26px; flex-wrap:wrap;}
+  .btn{
+    font-family:'JetBrains Mono',monospace; font-size:13px; padding:10px 16px; border-radius:2px;
+    border:1px solid var(--border); color:var(--text); display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn.primary{border-color:var(--green); color:var(--green);}
+  .btn.primary:hover{background:rgba(62,207,122,.08); text-decoration:none;}
+  .btn:hover{text-decoration:none; border-color:var(--muted);}
+
+  /* Section shell */
+  section{padding:48px 0; border-top:1px solid var(--border-soft);}
+  .cmd{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--dim); margin-bottom:20px;}
+  .cmd .prompt{color:var(--green);}
+  .cmd .arg{color:var(--text);}
+
+  /* About */
+  #about p{max-width:65ch; color:var(--text);}
+  #about p + p{margin-top:12px;}
+  .meta-row{display:flex; gap:24px; margin-top:22px; flex-wrap:wrap; font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--muted);}
+  .meta-row span strong{color:var(--text); display:block; font-size:12px; text-transform:lowercase; font-weight:400;}
+
+  /* Skills */
+  .skillgroup{margin-bottom:22px;}
+  .skillgroup:last-child{margin-bottom:0;}
+  .skillgroup h3{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted); font-weight:400; margin-bottom:10px;}
+  .tags{display:flex; flex-wrap:wrap; gap:8px;}
+  .tag{
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; padding:5px 10px; border:1px solid var(--border);
+    border-radius:2px; color:var(--text); background:var(--panel);
+  }
+
+  /* Certs */
+  .cert{display:flex; gap:14px; padding:12px 0; border-bottom:1px solid var(--border-soft); align-items:baseline;}
+  .cert:last-child{border-bottom:none;}
+  .cert-date{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--dim); width:84px; flex-shrink:0;}
+  .cert-name{flex:1; font-size:14.5px;}
+  .cert-name small{display:block; color:var(--muted); font-size:12.5px; margin-top:2px;}
+  .status{font-family:'JetBrains Mono',monospace; font-size:11px; padding:2px 7px; border-radius:2px; flex-shrink:0; white-space:nowrap;}
+  .status.pass{color:var(--green); border:1px solid var(--green);}
+  .status.prog{color:var(--amber); border:1px solid var(--amber);}
+
+  /* Projects as file listing */
+  .filelist{font-family:'JetBrains Mono',monospace; font-size:13px;}
+  .frow{display:grid; grid-template-columns:auto 1fr; gap:4px 14px; padding:14px 0; border-bottom:1px solid var(--border-soft); cursor:pointer;}
+  .frow:last-child{border-bottom:none;}
+  .perm{color:var(--dim); font-size:12px; align-self:start; padding-top:2px;}
+  .fname{color:var(--green); font-weight:500;}
+  .fname .ai-flag{color:var(--amber); margin-left:6px; font-size:11px;}
+  .fdesc{grid-column:2; color:var(--muted); font-family:'Inter',sans-serif; font-size:13.5px; line-height:1.55; max-width:62ch;}
+  .fstack{grid-column:2; margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;}
+  .fstack span{font-size:11px; color:var(--dim); border:1px solid var(--border); padding:2px 7px; border-radius:2px;}
+
+  /* Tools */
+  .toolgroup{margin-bottom:18px;}
+  .toolgroup:last-child{margin-bottom:0;}
+  .toolgroup h3{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted); font-weight:400; margin-bottom:10px;}
+
+  /* Languages */
+  .langrow{display:flex; justify-content:space-between; max-width:360px; padding:7px 0; font-size:14px; border-bottom:1px solid var(--border-soft);}
+  .langrow:last-child{border-bottom:none;}
+  .langrow span:last-child{color:var(--muted); font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+
+  /* Contact */
+  .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:22px;}
+  @media (max-width:480px){.contact-grid{grid-template-columns:1fr;}}
+  .cline{font-family:'JetBrains Mono',monospace; font-size:13.5px; padding:12px 14px; border:1px solid var(--border); border-radius:2px; background:var(--panel);}
+  .cline .k{color:var(--dim); display:block; font-size:11px; margin-bottom:4px;}
+  .cline a{color:var(--text);}
+  .cline a:hover{color:var(--green);}
+
+  footer{padding:32px 0 48px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--dim); text-align:center;}
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <div class="brand"><span class="prompt">&gt;</span> slim@redteam<span class="prompt">:~$</span></div>
+    <div class="navlinks" id="navlinks">
+      <a href="#about">about</a>
+      <a href="#skills">skills</a>
+      <a href="#certs">certs</a>
+      <a href="#projects">projects</a>
+      <a href="#tools">tools</a>
+      <a href="#contact">contact</a>
+    </div>
+    <button class="menu-btn mono" id="menuBtn" aria-expanded="false" aria-controls="navlinks">menu</button>
+  </nav>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <div id="boot"></div>
+  </section>
+
+  <section id="about" class="wrap">
+    <div class="cmd"><span class="prompt">$</span> <span class="arg">cat about.md</span></div>
+    <p>Motivated and certified Cybersecurity Engineering student at TEK-UP University, specializing in Network and Information Security, with a strong interest in offensive security, penetration testing, and secure system administration.</p>
+    <p>Currently seeking a cybersecurity internship to apply practical technical skills in real-world environments, support organizational security initiatives, and develop expertise alongside industry professionals.</p>
+    <div class="meta-row">
+      <span><strong>location</strong>Manouba, Tunisia</span>
+      <span><strong>focus</strong>Offensive security research / security automation</span>
+      <span><strong>also</strong>Malware analysis &amp; reverse engineering</span>
+    </div>
+  </section>
+
+  <section id="education" class="wrap">
+    <div class="cmd"><span class="prompt">$</span> <span class="arg">cat education.log</span></div>
+    <div class="cert">
+      <div class="cert-date mono">present</div>
+      <div class="cert-name">Engineering Degree — Network &amp; Information Security<small>TEK-UP University, Tunisia</small></div>
+    </div>
+    <div class="cert">
+      <div class="cert-date mono">2024</div>
+      <div class="cert-name">Bachelor's Degree in Computer Science<small>FSGF, Gafsa</small></div>
+    </div>
+  </section>
+
+  <section id="skills" class="wrap">
+    <div class="cmd"><span class="prompt">$</span> <span class="arg">ls skills/</span></div>
+    <div class="skillgroup">
+      <h3>security</h3>
+      <div class="tags">
+        <span class="tag">Network Penetration Testing</span><span class="tag">Web Application Security</span>
+        <span class="tag">Vulnerability Assessment</span><span class="tag">Information Gathering</span>
+        <span class="tag">Exploitation Techniques</span><span class="tag">Advanced Injection</span>
+        <span class="tag">API Security</span><span class="tag">WAF &amp; Filter Evasion</span>
+      </div>
+    </div>
+    <div class="skillgroup">
+      <h3>programming</h3>
+      <div class="tags">
+        <span class="tag">Python</span><span class="tag">Bash</span><span class="tag">PowerShell</span>
+        <span class="tag">C</span><span class="tag">JavaScript</span><span class="tag">PHP</span>
+        <span class="tag">SQL</span><span class="tag">NoSQL</span><span class="tag">Go</span><span class="tag">Java</span>
+      </div>
+    </div>
+    <div class="skillgroup">
+      <h3>infrastructure</h3>
+      <div class="tags">
+        <span class="tag">VMware</span><span class="tag">Windows Server</span>
+        <span class="tag">Kali Linux</span><span class="tag">Active Directory</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="certs" class="wrap">
+    <div class="cmd"><span class="prompt">$</span> <span class="arg">cat certifications.log</span></div>
+    <div class="cert">
+      <div class="cert-date mono">oct 2025</div>
+      <div class="cert-name">eJPTv2 — Junior Penetration Tester<small>INE</small></div>
+      <div class="status pass">passed</div>
+    </div>
+    <div class="cert">
+      <div class="cert-date mono">feb 2026</div>
+      <div class="cert-name">eWPTv2 — Web App Penetration Tester<small>INE</small></div>
+      <div class="status pass">passed</div>
+    </div>
+    <div class="cert">
+      <div class="cert-date mono">may 2026</div>
+      <div class="cert-name">ICCA — Certified Cloud Associate<small>INE</small></div>
+      <div class="status pass">passed</div>
+    </div>
+    <div class="cert">
+      <div class="cert-date mono">jul 2026</div>
+      <div class="cert-name">eWPTXv3 — Web App Pentester eXtreme<small>INE</small></div>
+      <div class="status pass">passed</div>
+    </div>
+    <div class="cert">
+      <div class="cert-date mono">—</div>
+      <div class="cert-name">CEH — Certified Ethical Hacker<small>in progress</small></div>
+      <div class="status prog">in progress</div>
+    </div>
+    <div class="cert">
+      <div class="cert-date mono">—</div>
+      <div class="cert-name">CRTP — Certified Red Team Professional<small>in progress</small></div>
+      <div class="status prog">in progress</div>
+    </div>
+    <div class="cert">
+      <div class="cert-date mono">jun 2026</div>
+      <div class="cert-name">HTB Mini Pro Lab — Mythical<small>Hack The Box</small></div>
+      <div class="status pass">cleared</div>
+    </div>
+  </section>
+
+  <section id="projects" class="wrap">
+    <div class="cmd"><span class="prompt">$</span> <span class="arg">ls -la projects/</span></div>
+    <div class="filelist">
+      <div class="frow">
+        <div class="perm">-rwxr-xr-x</div>
+        <div class="fname">reconforge/</div>
+        <div class="fdesc">Python-based web vulnerability scanner that fingerprints a target's technologies and identifies known <span style="color:var(--red)">CVEs</span>. Integrated an AI agent that autonomously decides which attacks to run based on the findings and executes the full testing workflow with minimal human input.</div>
+        <div class="fstack"><span>Python</span><span>CVE/NVD</span><span>AI agent</span><span>HTTP</span></div>
+      </div>
+      <div class="frow">
+        <div class="perm">-rwxr-xr-x</div>
+        <div class="fname">netscanner/</div>
+        <div class="fdesc">Python network scanning tool with a Tkinter GUI that discovers active machines on a network and identifies their open ports — basic reconnaissance without the command line.</div>
+        <div class="fstack"><span>Python</span><span>Tkinter</span><span>Sockets</span></div>
+      </div>
+      <div class="frow">
+        <div class="perm">-rw-r--r--</div>
+        <div class="fname">cape-sandbox/</div>
+        <div class="fdesc">Set up and configured a malware analysis environment for automated static and dynamic analysis of suspicious files.</div>
+        <div class="fstack"><span>CAPE</span><span>Malware Analysis</span><span>Sandboxing</span></div>
+      </div>
+      <div class="frow">
+        <div class="perm">-rwxr-xr-x</div>
+        <div class="fname">wireless-monitor/</div>
+        <div class="fdesc">AI-based network monitoring system that analyzes real-world wireless traffic to detect anomalies and suspicious activity in real time.</div>
+        <div class="fstack"><span>Python</span><span>AI/ML</span><span>Wireless</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tools" class="wrap">
+    <div class="cmd"><span class="prompt">$</span> <span class="arg">which tools</span></div>
+    <div class="toolgroup">
+      <h3>pentest</h3>
+      <div class="tags">
+        <span class="tag">Metasploit</span><span class="tag">Burp Suite</span><span class="tag">Nmap</span>
+        <span class="tag">Wireshark</span><span class="tag">SQLMap</span><span class="tag">Gobuster</span>
+        <span class="tag">Nikto</span><span class="tag">ZAProxy</span><span class="tag">theHarvester</span>
+        <span class="tag">Amass</span><span class="tag">Shodan</span>
+      </div>
+    </div>
+    <div class="toolgroup">
+      <h3>infra &amp; sysadmin</h3>
+      <div class="tags">
+        <span class="tag">VMware</span><span class="tag">VirtualBox</span><span class="tag">GNS3</span>
+        <span class="tag">Ansible</span><span class="tag">Visual Studio</span><span class="tag">VS Code</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="languages" class="wrap">
+    <div class="cmd"><span class="prompt">$</span> <span class="arg">locale -a</span></div>
+    <div class="langrow"><span>Arabic</span><span>native</span></div>
+    <div class="langrow"><span>English</span><span>intermediate</span></div>
+    <div class="langrow"><span>French</span><span>intermediate</span></div>
+    <div class="langrow"><span>German</span><span>beginner · A2</span></div>
+  </section>
+
+  <section id="contact" class="wrap">
+    <div class="cmd"><span class="prompt">$</span> <span class="arg">contact --init</span></div>
+    <div class="contact-grid">
+      <div class="cline"><span class="k">email</span><a href="mailto:benmabroukslim599@gmail.com">benmabroukslim599@gmail.com</a></div>
+      <div class="cline"><span class="k">phone</span><a href="tel:+21654260603">+216 54 260 603</a></div>
+      <div class="cline"><span class="k">github</span><a href="https://github.com/SlimBenMabrouk" target="_blank" rel="noopener">github.com/SlimBenMabrouk</a></div>
+      <div class="cline"><span class="k">linkedin</span><a href="https://www.linkedin.com/in/slim-ben-mabrouk-4099b82a9/" target="_blank" rel="noopener">slim-ben-mabrouk</a></div>
+    </div>
+    <div class="hero-actions">
+      <a class="btn primary" href="cv.pdf" download>download cv.pdf</a>
+      <a class="btn" href="mailto:benmabroukslim599@gmail.com">say hello</a>
+    </div>
+  </section>
+</main>
+
+<footer>built from the command line · Manouba, Tunisia</footer>
+
+<script>
+  // mobile menu
+  var menuBtn = document.getElementById('menuBtn');
+  var navlinks = document.getElementById('navlinks');
+  menuBtn.addEventListener('click', function(){
+    var open = navlinks.classList.toggle('open');
+    menuBtn.setAttribute('aria-expanded', open);
+  });
+  navlinks.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){ navlinks.classList.remove('open'); });
+  });
+
+  // boot sequence hero
+  var lines = [
+    {type:'cmd', text:'whoami'},
+    {type:'out', text:'SLIM BEN MABROUK', big:true},
+    {type:'out', text:'Cybersecurity Engineering Student — Offensive Security / Pentest'}
+  ];
+  var boot = document.getElementById('boot');
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function render(){
+    boot.innerHTML =
+      '<div class="termline"><span class="prompt">$</span> whoami</div>' +
+      '<h1>SLIM BEN MABROUK<span class="cursor"></span></h1>' +
+      '<div class="role">Cybersecurity Engineering Student — Offensive Security / Pentest</div>' +
+      '<p>Network penetration testing, web application security, and AI-assisted vulnerability research. Building and documenting lab environments, pentest tooling, and malware analysis setups.</p>' +
+      '<div class="hero-actions">' +
+        '<a class="btn primary" href="#projects">see projects</a>' +
+        '<a class="btn" href="#contact">get in touch</a>' +
+      '</div>';
+  }
+  render();
+</script>
+</body>
+</html>
